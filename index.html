@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Museu do Registro do Conhecimento</title>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Special+Elite&family=Cinzel&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#100e0d;--fg:#f7eddb;--pn:rgba(18,15,13,.97);--ac:#e8bd78;--line:#70583c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:radial-gradient(ellipse at 50% 20%,#30251a 0%,#100e0d 70%);color:var(--fg);font:14px/1.65 system-ui,-apple-system,Segoe UI,sans-serif;overflow:hidden}canvas#c{display:block;width:100%;height:100%;cursor:grab;touch-action:none}canvas#c:active{cursor:grabbing}
+#hud{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;display:flex;gap:9px;flex-wrap:wrap;align-items:center;padding:13px 18px;background:linear-gradient(180deg,rgba(8,7,6,.94),rgba(8,7,6,.68) 72%,transparent);pointer-events:none;border-bottom:1px solid #d5a65a33}#hud>*{pointer-events:auto}#hud b{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:#f8d99f;margin-right:8px}
+select,button,input,textarea{font:inherit;color:var(--fg);background:linear-gradient(145deg,#34291e,#211a14);border:1px solid #826b4d;border-radius:9px;padding:8px 11px;box-shadow:0 4px 14px #0003}button{cursor:pointer;transition:transform .18s,border-color .18s,background .18s}button:hover{border-color:var(--ac);background:#493622;transform:translateY(-1px)}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #f0c77c;outline-offset:2px}
+#mini{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:rgba(9,8,7,.86);border:1px solid #c49b5b66;border-radius:12px;box-shadow:0 8px 30px #0007;padding:3px}#help{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));font-size:12px;color:#f2dfbf;background:#100d0bd9;border:1px solid #c49b5b55;border-radius:12px;padding:10px 13px;text-align:right;max-width:48vw;box-shadow:0 8px 30px #0007}
+#P{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:linear-gradient(160deg,rgba(37,28,21,.99),rgba(13,12,11,.99));padding:calc(20px + env(safe-area-inset-top,0px)) 22px calc(24px + env(safe-area-inset-bottom,0px));overflow:auto;transform:translateX(105%);transition:transform .35s cubic-bezier(.2,.8,.2,1);border-left:1px solid #d7ad6c;box-shadow:-20px 0 70px #0008;z-index:5}#P.o{transform:none}#P h3{font-family:Cinzel,serif;font-size:22px;line-height:1.3;color:#f3cd8b;margin:8px 42px 12px 0}#P p{color:#e6d9c4;font-size:15px;line-height:1.8}h4{font-family:Cinzel,serif;color:#f0c985;margin:20px 0 8px;letter-spacing:.03em}.big{font-size:22px;word-break:break-word;min-height:44px;padding:12px;background:#090807a8;border:1px solid #a9824c66;border-radius:10px;white-space:pre-wrap}.q{background:#0c0a08a8;border:1px solid #9a774a55;padding:12px;border-radius:12px;margin:18px 0}.q button{display:block;width:100%;text-align:left;margin:7px 0}.ok{color:#9be6a1}.no{color:#ff9b8d}.paper{background:linear-gradient(135deg,#f1e4c7,#d7c39c);color:#2d2117;padding:16px;border-radius:3px;min-height:45px;box-shadow:inset 0 0 18px #8d683333,0 8px 18px #0003}.bar{height:14px;background:linear-gradient(90deg,#8d6132,#f0c985);border-radius:3px;margin:5px 0 12px}#P input,#P textarea,#P select{width:100%;margin:5px 0 9px;background:#17120e}#hud select,#hud input[type=range]{width:auto}.glow{color:#a8f6ff;text-shadow:0 0 12px #0ff}.msn{background:#f8f8f8;color:#171717;font-family:Verdana,sans-serif;padding:10px;border:2px outset #9bf;border-radius:4px}.card{background:linear-gradient(135deg,#f8f2dc,#e5d9b7);color:#29251c;border:1px solid #b8a77c;padding:14px;font-family:'Special Elite',monospace;box-shadow:0 8px 20px #0004}#P>div>button#x{border-radius:50%;width:36px;height:36px;padding:0;font-size:18px}
+@media(max-width:700px){#hud{padding:8px;gap:6px}#hud b{width:100%;font-size:12px}#hud button,#hud select{padding:6px 8px;font-size:12px}#help{font-size:10px;max-width:55vw;right:8px;bottom:8px;padding:7px}#mini{left:8px;bottom:8px;transform:scale(.82);transform-origin:bottom left}#P{padding-left:16px;padding-right:16px}}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="hud"><b style="font-family:Cinzel,serif">🏛️ Museu do Conhecimento</b>
+<button id="pv">◀</button><select id="sel"></select><button id="nx">▶</button>
+<label><input type="checkbox" id="au" style="width:auto"> 🔊 Narração histórica</label>
+<label>💡 <input type="range" id="li" min="0" max="3" step=".1" value="1.4"></label></div>
+<canvas id="mini" width="200" height="34"></canvas>
+<div id="help">Arraste para olhar 360° · clique nos anéis no chão · ↑↓ andar · ←→ girar · clique nas esferas brilhantes</div>
+<div id="P"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),D=30;
+const S=[
+{n:'1 · O Nascimento da Escrita',c:0xffb060,t:'Imagine uma cidade antiga, com comerciantes contando cevada, famílias negociando colheitas e governantes tentando organizar canais e impostos. Há cerca de cinco mil anos, na Mesopotâmia, sinais gravados em argila ajudaram a registrar transações e administrar cidades; no Egito, sistemas hieroglíficos também registraram nomes, rituais e poder. A escrita não surgiu pronta nem foi obra de uma única pessoa: nasceu de necessidades coletivas e do trabalho de escribas. Ela ampliou a memória humana, mas o acesso era desigual — saber escrever podia significar pertencer a uma elite. Cada marca na argila é, ao mesmo tempo, tecnologia, trabalho e vestígio de uma vida.',q:{q:'Pictograma: ondas 𓈗 + peixe 🐟. O que isso quer dizer?',o:['Rio / pesca','Fogueira'],a:0,f:'Pictogramas combinam imagens para representar ideias.'},w:W0},
+{n:'2 · O Conhecimento Escrito à Mão',c:0xff8a3a,t:'Entre os séculos medievais, antes da impressão se espalhar pela Europa, livros eram objetos raros, caros e demorados de produzir. Em mosteiros e oficinas, copistas preparavam pergaminho, afiavam penas, misturavam pigmentos e reproduziam linha por linha textos religiosos, científicos e clássicos. As iluminuras não eram apenas decoração: cores, ouro e imagens guiavam a leitura e comunicavam ideias. O trabalho exigia disciplina, visão treinada e muitas horas de atenção; erros podiam obrigar a refazer páginas. Monges tiveram papel importante, mas mulheres, artesãos, tradutores e estudiosos de diferentes culturas também participaram da transmissão do saber. Copiar era preservar — e também selecionar o que seria lembrado.',w:W1},
+{n:'3 · A Revolução da Imprensa',c:0xc0c8d0,t:'No século XV, a impressão com tipos móveis de metal e prensa mecânica, associada a Johannes Gutenberg em Mainz, transformou a escala de reprodução de textos na Europa. A mudança não aconteceu de um dia para o outro: dependeu de papel, metalurgia, tintas, investimento, compositores, impressores, vendedores e leitores. Reproduzir muitas cópias semelhantes acelerou a circulação de debates religiosos, científicos e políticos. Livros continuaram a exigir dinheiro e alfabetização, e a imprensa também podia divulgar propaganda e censura. A tecnologia ampliou a voz de algumas pessoas — mas quem imprimia, financiava e podia ler continuava influenciando quais ideias chegavam ao público.',w:W2},
+{n:'4 · A Biblioteca, Guardiã do Conhecimento',c:0x40c070,t:'Bibliotecas são mais do que salas silenciosas: são instituições construídas por pessoas que selecionam, descrevem, organizam, restauram e compartilham registros. De coleções antigas a bibliotecas públicas modernas, preservar conhecimento depende de bibliotecários, arquivistas, conservadores, comunidades e leitores. Catálogos e fichas ajudam a encontrar uma obra; critérios de classificação tornam o acervo navegável, mas também refletem escolhas humanas sobre como organizar o mundo. Bibliotecas podem democratizar o acesso à educação e à cultura, embora barreiras econômicas, políticas e sociais tenham limitado historicamente quem podia consultar certos materiais. Cuidar de um livro é cuidar da possibilidade de alguém aprender com ele no futuro.',q:{q:'Qual fonte é mais confiável?',o:['Dra. Lima, 2019, Universidade de São Paulo, com 12 referências verificáveis','"Anônimo", sem data, sem fontes, "li num grupo"'],a:0,f:'Autor, data, fonte e referências verificáveis são sinais de credibilidade.'},w:W3},
+{n:'5 · A Informação na Velocidade da Internet',c:0x6a7aff,t:'Com computadores pessoais, redes digitais e internet, a informação passou a cruzar continentes em segundos. Pessoas comuns ganharam meios de publicar, conversar, estudar e organizar movimentos sociais sem depender exclusivamente de editoras ou emissoras. Por trás da tela há trabalho humano: programadores, moderadores, jornalistas, técnicos, criadores e usuários produzem e mantêm esse ambiente. Porém, algoritmos e plataformas decidem o que ganha visibilidade; dados pessoais podem ser coletados, e boatos se espalham com a mesma velocidade das descobertas. Na era digital, ler também é verificar: quem publicou, quando, com quais evidências e quem se beneficia do compartilhamento?',q:{q:'Qual notícia parece confiável?',o:['CHOCANTE!!! Cientistas escondem a cura! Compartilhe antes que APAGUEM!','Ministério da Saúde publica boletim de 03/10/2026, com link para os dados abertos'],a:1,f:'Clickbait, urgência e ausência de fonte são sinais de alerta.'},w:W4},
+{n:'6 · A Era da Inteligência Artificial',c:0x30e8ff,t:'Hoje, sistemas de inteligência artificial conseguem gerar textos, imagens, vozes e resumos a partir de padrões aprendidos em grandes conjuntos de dados. Essas ferramentas podem apoiar a criatividade, a tradução, a acessibilidade e a pesquisa, mas não substituem julgamento humano: podem inventar fatos, reproduzir vieses e ocultar a origem de uma informação. Pessoas projetam os sistemas, selecionam dados, definem objetivos e decidem onde aplicá-los; outras pessoas são afetadas por essas escolhas. O desafio desta era não é apenas perguntar o que a máquina consegue produzir, mas quem responde pelos resultados, quais vozes foram incluídas e como verificar o que parece convincente.',q:{q:'Texto gerado por IA. Qual frase contém um erro factual? Confira numa fonte independente.',o:['Santos-Dumont voou com o 14-Bis em Paris, em 1906.','A Torre Eiffel foi inaugurada em 1789, na Revolução Francesa.','O Brasil fica na América do Sul.'],a:1,f:'A Torre Eiffel foi inaugurada em 1889, não 1789. A IA soou segura, mas errou.'},w:W5}];
+
+function W0(e){e.innerHTML=`<h4>✍️ Oficina: Argila e Cuneiforme</h4><input placeholder="Digite uma frase"><div class="big"></div><canvas width="380" height="110" style="background:#a98a62;border-radius:6px;touch-action:none;width:100%"></canvas><small>Arraste para desenhar na argila com o estilete.</small>`;
+const i=e.querySelector('input'),o=e.querySelector('.big'),cv=e.querySelector('canvas'),g=cv.getContext('2d');
+i.oninput=()=>{const u=[...i.value.toUpperCase()];o.textContent=u.map(h=>{const k=h.charCodeAt(0);return k>64&&k<91?String.fromCodePoint(0x12000+(k-65)*7+3):h}).join('')+'\n'+u.map(h=>{const k=h.charCodeAt(0);return k>64&&k<91?String.fromCodePoint(0x13000+(k-65)*9+1):h}).join('')};
+let d=0;const p=ev=>{const r=cv.getBoundingClientRect();return[(ev.clientX-r.left)*cv.width/r.width,(ev.clientY-r.top)*cv.height/r.height]};
+cv.onpointerdown=ev=>{d=1;g.beginPath();g.moveTo(...p(ev))};cv.onpointerup=()=>d=0;
+cv.onpointermove=ev=>{if(d){g.lineWidth=4;g.strokeStyle='#5a4326';g.lineCap='round';g.lineTo(...p(ev));g.stroke()}}}
+
+function W1(e){e.innerHTML=`<h4>⏳ Cronômetro do Monge</h4><input placeholder="Digite uma frase"><div id="r"></div><h4>✍️ Oficina: Gótica e Carolíngia</h4><select><option value="UnifrakturCook">Gótica (Textura)</option><option value="Cinzel">Carolíngia (minúscula)</option></select><div class="paper big" style="font-size:24px"></div>`;
+const i=e.querySelector('input'),s=e.querySelector('select'),o=e.querySelector('.paper'),r=e.querySelector('#r');
+const f=()=>{const t=i.value;const days=t.length/40;r.textContent=t?`Um monge levaria cerca de ${days<1?Math.max(1,Math.round(days*8))+' horas':days.toFixed(1)+' dias'} para copiar isto com iluminuras (≈40 caracteres/dia, contando preparo de tinta e ornamentos).`:'';o.style.fontFamily=s.value;o.textContent='';if(t){const c=document.createElement('span');c.textContent=t[0];c.style.cssText='float:left;font-size:64px;line-height:.9;color:#a31;background:#d9b44a55;border:2px solid #a31;margin:0 6px 0 0;padding:2px 8px';o.append(c,t.slice(1)+' ❦')}};
+i.oninput=s.onchange=f}
+
+function W2(e){e.innerHTML=`<h4>⚖️ Manuscrito × Prensa</h4><div>Monge: 1 página</div><div class="bar" style="width:1%"></div><div>Prensa de Gutenberg: 1.000 páginas no mesmo tempo</div><div class="bar" style="width:100%"></div><h4>✍️ Oficina: Prensa Tipográfica</h4><input maxlength="24" placeholder="Monte sua frase (tipos de chumbo)"><div class="big" style="transform:scaleX(-1);background:#555;font-family:'Special Elite',monospace;letter-spacing:4px"></div><button>⚙️ Acionar alavanca</button><div class="paper big" style="font-family:'Special Elite',monospace;filter:contrast(1.3)"></div>`;
+const i=e.querySelector('input'),t=e.querySelector('.big'),p=e.querySelector('.paper');i.oninput=()=>{t.textContent=i.value;p.textContent=''};e.querySelector('button').onclick=()=>{p.textContent=i.value;p.animate([{transform:'scale(.96)',opacity:.4},{transform:'none',opacity:1}],300);beep(90,.15,'square')}}
+
+function W3(e){e.innerHTML=`<h4>✍️ Oficina: Máquina de Escrever</h4><input placeholder="Digite um título e tecle Enter (ding!)"><div class="card" id="cd" style="display:none"></div>`;
+const i=e.querySelector('input'),c=e.querySelector('#cd');i.style.fontFamily="'Special Elite',monospace";
+i.onkeydown=k=>{if(k.key==='Enter'&&i.value){beep(1800,.25,'sine');c.style.display='block';c.innerHTML='';const a=['FICHA Nº '+(Math.random()*9000+1000|0),'Título: ','Classificação: 028.7 — Leitura e fontes','Biblioteca do Museu · '+new Date().getFullYear()];a.forEach((x,j)=>{const d=document.createElement('div');d.textContent=x+(j==1?i.value:'');c.append(d)})}else beep(300+Math.random()*80,.04,'square')}}
+
+function W4(e){e.innerHTML=`<h4>✍️ Oficina: Chat dos anos 2000</h4><input placeholder="Sua mensagem" value="olá do passado!!"><select><option>red</option><option>blue</option><option>#f0f</option><option>green</option></select><label><input type="checkbox" style="width:auto"> &lt;b&gt;</label><div class="msn"><div></div><pre style="font:11px monospace;background:#eee;margin:6px 0 0;white-space:pre-wrap"></pre></div>`;
+const[i,s,b]=e.querySelectorAll('input,select'),box=e.querySelector('.msn div'),pre=e.querySelector('pre');
+const f=()=>{box.innerHTML='';const x=document.createElement('font');x.setAttribute('color',s.value);x.setAttribute('face','Comic Sans MS');x.textContent='Visitante diz: '+i.value;let n=x;if(b.checked){n=document.createElement('b');n.append(x)}box.append(n);pre.textContent=(b.checked?'<b>':'')+'<font color="'+s.value+'" face="Comic Sans MS">'+i.value+'</font>'+(b.checked?'</b>':'')};
+i.oninput=s.onchange=b.onchange=f;f()}
+
+function W5(e){e.innerHTML=`<h4>✍️ Oficina: Prompt / Neural Text</h4><input placeholder="Digite uma ideia" value="o futuro da leitura"><select><option value="r">Escreva como um robô</option><option value="p">Poético, em código de computador</option></select><button>▶ Gerar</button><div class="big glow" style="font-size:18px"></div>`;
+const i=e.querySelector('input'),s=e.querySelector('select'),o=e.querySelector('.big');let tm;
+e.querySelector('button').onclick=()=>{clearInterval(tm);const t=i.value;const tk=(s.value=='r'?`PROCESSANDO... TEMA: ${t.toUpperCase()}. CONCLUSÃO: HUMANOS E MÁQUINAS LEEM JUNTOS. FIM DE TRANSMISSÃO. BEEP.`:`while(vivo){ ler("${t}"); sonhar(); } // cada token, um verso`).split(/(?<=\s)/);o.textContent='';let k=0;tm=setInterval(()=>{if(k>=tk.length)return clearInterval(tm);const sp=document.createElement('span');sp.textContent=tk[k++];o.append(sp);sp.animate([{opacity:0,filter:'blur(4px)'},{opacity:1,filter:'none'}],250)},90)}}
+
+let ac;function beep(f,d,ty){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(.12,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(x){}}
+
+// ---- painel ----
+const P=$('#P');
+function open(i){const s=S[i];P.innerHTML='';const h=document.createElement('div');h.innerHTML=`<button style="float:right" id="x">✕</button><h3></h3><p></p>`;h.querySelector('h3').textContent=s.n;h.querySelector('p').textContent=s.t;P.append(h);const note=document.createElement('div');note.style.cssText='font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#c8a46e;border-bottom:1px solid #8b6b4055;padding:0 0 10px;margin-bottom:12px';note.textContent='PERCURSO HUMANO · TECNOLOGIA · MEMÓRIA';P.append(note);
+if(s.q){const q=document.createElement('div');q.className='q';q.innerHTML='<h4>🎯 Desafio</h4><div></div><div class="fb"></div>';q.children[1].textContent=s.q.q;s.q.o.forEach((t,j)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{const f=q.querySelector('.fb');f.className='fb '+(j==s.q.a?'ok':'no');f.textContent=(j==s.q.a?'✔ Correto! ':'✘ Tente de novo. ')+(j==s.q.a?s.q.f:'')};q.append(b)});P.append(q)}
+const w=document.createElement('div');P.append(w);s.w(w);P.classList.add('o');$('#x').onclick=()=>P.classList.remove('o')}
+
+// ---- cena ----
+const R=new THREE.WebGLRenderer({canvas:$('#c'),antialias:true}),sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(70,1,.1,300);
+sc.background=new THREE.Color(0x0d0b0a);sc.fog=new THREE.Fog(0x0d0b0a,10,70);
+const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.7},o)),box=(w,h,d,m,x,y,z,g=sc)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.position.set(x,y,z);g.add(b);return b};
+sc.add(new THREE.AmbientLight(0xffffff,.35));
+const L=S.length*D;
+box(L+30,.1,16,M(0x24201b,{metalness:.28,roughness:.48}),L/2-D/2,0,0);
+box(L+30,.1,16,M(0x15120f),L/2-D/2,6,0);
+box(L+30,6,.3,M(0x30271f),L/2-D/2,3,-8);box(L+30,6,.3,M(0x30271f),L/2-D/2,3,8);
+// Molduras, frisos e juntas do piso dão escala arquitetônica ao corredor.
+for(let z of [-7.78,7.78]){box(L+30,.18,.22,M(0x987044,{metalness:.45}),L/2-D/2,5.72,z);box(L+30,.12,.22,M(0x987044,{metalness:.35}),L/2-D/2,.35,z)}
+for(let xx=-10;xx<L+15;xx+=5){box(.035,.012,15.5,M(0x786044),xx,.061,0);box(4.8,.018,.035,M(0x786044),xx+2.5,.062,0)}
+for(let xx=-10;xx<L+15;xx+=D/2){for(let zz of [-7.65,7.65]){box(.32,5.35,.42,M(0x49382a),xx,2.85,zz);box(.48,.22,.56,M(0xb28a50,{metalness:.4}),xx,5.55,zz);box(.48,.22,.56,M(0xb28a50,{metalness:.4}),xx,.32,zz)}}
+box(.3,6,16,M(0x2a2420),-15,3,0);box(.3,6,16,M(0x2a2420),L-15,3,0);
+function label(t,w=8){const c=document.createElement('canvas');c.width=1024;c.height=128;const g=c.getContext('2d');g.fillStyle='#000a';g.fillRect(0,0,1024,128);g.fillStyle='#fff';g.font='54px Cinzel,serif';g.textAlign='center';g.fillText(t,512,84);const m=new THREE.Mesh(new THREE.PlaneGeometry(w,w/8),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true}));return m}
+const lights=[],spin=[],hot=[],poi=[];
+S.forEach((s,i)=>{const x=i*D,col=s.c,lt=new THREE.PointLight(col,1.4,30);lt.position.set(x,4.8,0);sc.add(lt);lights.push(lt);
+const g=new THREE.Group();g.position.set(x,0,-4.5);sc.add(g);
+box(5,.2,4,M(col,{emissive:col,emissiveIntensity:.25}),0,.1,0,g);
+const bk=box(14,4.5,.1,M(col,{emissive:col,emissiveIntensity:.35}),x,3,-7.8);
+const lb=label(s.n);lb.position.set(x,5.3,-7.6);sc.add(lb);
+box(1.6,.9,1.6,M(0x3a332b),0,.65,0,g);
+if(i==0){[-.5,.1,.6].forEach((o,j)=>box(.5,.7,.15,M(0xb98a5a),o,1.5,.1*j,g).rotation.z=.1*j)}
+if(i==1){for(let j=0;j<3;j++){const c=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,1.1,16),M(0xe8d9a8));c.rotation.z=Math.PI/2;c.position.set(0,1.2+j*.15,-.4+j*.4);g.add(c)}box(.1,2.4,.1,M(0xf0ead0,{emissive:0xffaa33,emissiveIntensity:1}),1.2,1.2,0,g)}
+if(i==2){box(1.2,.15,1.2,M(0x444),0,1.2,0,g);box(.15,2.2,.15,M(0x6b4a2a),-.5,1.9,0,g);box(.15,2.2,.15,M(0x6b4a2a),.5,1.9,0,g);box(1.4,.2,.3,M(0x6b4a2a),0,2.9,0,g);const h=box(1.1,.15,1.1,M(0xaaa,{metalness:.8}),0,1.7,0,g);spin.push(()=>h.position.y=1.6+Math.sin(performance.now()/500)*.2)}
+if(i==3){for(let j=0;j<6;j++){for(let k=0;k<4;k++)box(1.7,.7,.5,M([0x5a3a22,0x3b2a1e,0x7a4a2a][(j+k)%3]),-6.4+j*2.5+0,1+k*1,-3.1,g)}box(.5,.5,.5,M(0x0a6a3a,{emissive:0x0a6a3a,emissiveIntensity:.7}),.4,1.4,0,g)}
+if(i==4){[-2.2,0,2.2].forEach((o,j)=>{const m=box(1.8,1.1,.1,M(j%2?0xa040ff:0x2a6aff,{emissive:j%2?0xa040ff:0x2a6aff,emissiveIntensity:.9}),o,2.4+j*.2,-.2,g);spin.push(()=>m.position.y=2.4+j*.2+Math.sin(performance.now()/700+j)*.1)})}
+if(i==5){const a=new THREE.Mesh(new THREE.IcosahedronGeometry(.8,1),new THREE.MeshBasicMaterial({color:0x30e8ff,wireframe:true})),b=new THREE.Mesh(new THREE.TorusKnotGeometry(.35,.1,64,8),M(0xffffff,{emissive:0x30e8ff,emissiveIntensity:1}));a.position.y=b.position.y=2.2;g.add(a,b);spin.push(()=>{a.rotation.y+=.01;b.rotation.x+=.02})}
+// Cenografia ampliada: cada sala recebe um conjunto próprio de vitrines, molduras e artefatos.
+const gold=M(0xc8a15e,{metalness:.55,roughness:.35}),darkWood=M(0x39271b),glass=new THREE.MeshPhysicalMaterial({color:0xd7e8ee,transparent:true,opacity:.16,roughness:.08,metalness:.15}),stone=M(0x827766),paper=M(0xe2d2ad),accent=M(col,{emissive:col,emissiveIntensity:.18});
+const pedestal=(px,pz,w=1.3,d=1)=>{box(w,.16,d,gold,px,.18,pz,g);box(w*.88,.72,d*.88,darkWood,px,.6,pz,g);box(w*1.08,.1,d*1.08,gold,px,1,pz,g)};
+const frame=(px,py,pz,w,h,base)=>{box(w+.18,h+.18,.12,gold,px,py,pz,g);box(w,h,.13,M(base),px,py,pz+.075,g);box(w*.84,h*.78,.035,paper,px,py,pz+.15,g);for(let n=0;n<4;n++)box(w*.16,.025,.04,accent,px-w*.27+n*w*.18,py-h*.18,pz+.18,g)};
+// Pilares decorativos e pequenas luzes laterais criam ritmo visual ao longo da galeria.
+for(const side of [-6.6,6.6]){box(.22,4.5,.22,darkWood,side,2.35,-1.9,g);box(.38,.18,.38,gold,side,4.62,-1.9,g);box(.38,.18,.38,gold,side,.12,-1.9,g);const lamp=new THREE.PointLight(col,.35,8);lamp.position.set(side*.78,3.6,-1.7);g.add(lamp)}
+// Três painéis narrativos em cada exposição, como legendas de museu.
+frame(-4.4,3.1,-3.72,2.25,1.35,0x30251b);frame(0,3.1,-3.72,2.25,1.35,0x30251b);frame(4.4,3.1,-3.72,2.25,1.35,0x30251b);
+// Vitrines e peças centrais diferentes por período.
+if(i===0){
+  // Mesopotâmia: tabletes, cestos de argila, estiletes e mapa fluvial.
+  for(let j=0;j<5;j++){pedestal(-4.5+j*2.2,-.7,.95,.85);const tablet=box(.52,.65,.12,M([0xb78652,0x9d7047,0xc49a63][j%3]),-4.5+j*2.2,1.48,-.7,g);tablet.rotation.z=(j-2)*.055;for(let k=0;k<4;k++)box(.24,.025,.025,darkWood,-4.58+j*2.2,1.3+k*.1,-.62,g)}
+  for(let j=0;j<7;j++){const reed=box(.055,1.4,.055,M(0xbda06b),-2.8+j*.17,.95,1.15,g);reed.rotation.z=(j-3)*.04}
+  const bowl=new THREE.Mesh(new THREE.SphereGeometry(.52,20,12,0,Math.PI*2,0,Math.PI*.55),M(0x9b673d));bowl.position.set(3,1.15,1.2);g.add(bowl);
+  frame(0,4.45,-3.65,5.8,.45,0x74512d);
+}else if(i===1){
+  // Scriptorium: escrivaninha, livro aberto, tinteiros, rolos e estantes.
+  box(5.5,.22,1.5,darkWood,0,1.05,.9,g);for(let x2 of [-2.35,2.35])for(let z2 of [.35,1.45])box(.18,1,.18,darkWood,x2,.55,z2,g);
+  const left=new THREE.Mesh(new THREE.BoxGeometry(1.25,.09,.9),paper);left.position.set(-.65,1.22,.85);left.rotation.z=-.12;g.add(left);const right=new THREE.Mesh(new THREE.BoxGeometry(1.25,.09,.9),paper);right.position.set(.65,1.22,.85);right.rotation.z=.12;g.add(right);
+  for(let j=0;j<4;j++){const quill=box(.035,1.05,.035,M(0xd9c89d),-1.8+j*.32,1.6,.45,g);quill.rotation.z=.24}
+  for(let j=0;j<3;j++){const ink=new THREE.Mesh(new THREE.CylinderGeometry(.16,.2,.28,16),M(0x27232a));ink.position.set(1.5+j*.42,1.3,.75);g.add(ink)}
+  for(let row=0;row<3;row++){box(2.8,.12,.55,darkWood,-4.5,1+row*1.05,-1.8,g);for(let j=0;j<6;j++){const book=box(.28,.72,.42,M([0x6d3025,0x294c3e,0x9a7138,0x373d63][(j+row)%4]),-5.65+j*.43,1.42+row*1.05,-1.8,g);book.rotation.z=(j%2)*.04}}
+}else if(i===2){
+  // Oficina tipográfica: prensa, caixa de tipos e folhas recém-impressas.
+  box(2.5,.2,1.8,darkWood,0,.95,.5,g);for(let x2 of [-1,1])box(.2,2.5,.2,M(0x5a3823),x2,2,.1,g);box(2.25,.18,.28,gold,0,3.1,.1,g);box(.25,1.25,.25,darkWood,0,2.4,.1,g);box(1.6,.2,1.25,M(0x51483d),0,1.55,.5,g);
+  for(let j=0;j<5;j++){const sheet=box(.78,.035,1.02,paper,-3.9+j*1.55,1.15,1.6,g);sheet.rotation.y=(j-2)*.06;for(let k=0;k<5;k++)box(.5,.012,.012,darkWood,-4.1+j*1.55,1.18,1.25+k*.13,g)}
+  for(let row=0;row<3;row++)for(let j=0;j<7;j++){const type=box(.22,.2,.22,M([0x9b8e79,0xb3a58c,0x817666][(j+row)%3]),-3.2+j*.48,1.2+row*.25,-1.2,g);type.rotation.y=(j%3)*.12}
+}else if(i===3){
+  // Biblioteca: estantes altas, livros, escada, mesa de consulta e catálogo.
+  for(let side of [-5.2,5.2]){box(2.1,3.8,.35,darkWood,side,2.15,-1.4,g);for(let row=0;row<5;row++){box(2.25,.1,.48,gold,side, .65+row*.78,-1.12,g);for(let j=0;j<7;j++){const bk=box(.19,.52,.32,M([0x6b3028,0x24463a,0x8b6a39,0x353a61][(j+row)%4]),side-.88+j*.29, .97+row*.78,-1.15,g);bk.rotation.z=(j%3-1)*.025}}}
+  box(3.5,.18,1.3,darkWood,0,1.1,1.1,g);for(let x2 of [-1.5,1.5])box(.15,1,.15,darkWood,x2,.55,1.1,g);for(let j=0;j<3;j++){const book=box(.65,.12,.85,paper,-.7+j*.7,1.25,1.05,g);book.rotation.y=(j-1)*.12}
+  for(let row=0;row<4;row++)for(let j=0;j<4;j++)box(.23,.15,.3,M([0xd8c6a0,0xb59a6d,0xeee0c4][(j+row)%3]),-1.2+j*.3,1.5+row*.18,-.2,g);
+}else if(i===4){
+  // Era digital: monitores, terminal, roteador, cabos e mapa de conexões.
+  for(let j=0;j<3;j++){box(1.65,.95,.16,M(0x202735,{metalness:.35}),-3.8+j*3.8,2.15,.1,g);box(1.42,.72,.04,M([0x246c83,0x3657a5,0x553e7d][j],{emissive:[0x123744,0x172e66,0x352044][j],emissiveIntensity:.7}),-3.8+j*3.8,2.17,.2,g);box(.12,.7,.12,stone,-3.8+j*3.8,1.65,.1,g);box(1.1,.08,.55,darkWood,-3.8+j*3.8,1.25,.1,g)}
+  for(let j=0;j<5;j++){const node=new THREE.Mesh(new THREE.SphereGeometry(.16,12,12),M(0x4b8dff,{emissive:0x1b52bb,emissiveIntensity:.8}));node.position.set(-3+j*1.5,3.8,-.6);g.add(node);if(j<4){const wire=box(1.2,.025,.025,M(0x5794ff,{emissive:0x1b52bb,emissiveIntensity:.8}),-2.25+j*1.5,3.8,-.6,g);wire.rotation.z=(j%2?.18:-.18)}}
+  box(1.1,.55,.75,M(0x2a303b,{metalness:.5}),0,.55,1.4,g);for(let j=0;j<4;j++)box(.08,.03,.08,accent,-.3+j*.2,.85,1.4,g);
+}else{
+  // IA: laboratório de dados, painéis, conjunto de nós e mesa de experimentação.
+  box(4.6,.18,1.5,M(0x172b35,{metalness:.5}),0,1,.9,g);for(let j=0;j<5;j++){const orb=new THREE.Mesh(new THREE.SphereGeometry(.22+(j%2)*.08,18,14),M(0x4deaff,{emissive:0x087eaa,emissiveIntensity:1}));orb.position.set(-1.8+j*.9,1.55,.9);g.add(orb);spin.push(()=>{orb.position.y=1.55+Math.sin(performance.now()/500+j)*.12})}
+  for(let j=0;j<4;j++){const screen=box(1.15,.9,.08,M(0x17222d,{metalness:.35}),-3.8+j*2.5,2.45,-.1,g);box(.94,.67,.035,M(0x075c73,{emissive:0x00bce0,emissiveIntensity:.7}),-3.8+j*2.5,2.45,-.04,g);for(let k=0;k<3;k++)box(.6,.025,.025,M(0x7ceeff,{emissive:0x159dbb,emissiveIntensity:.8}),-4.05+j*2.5,2.3+k*.13,-.01,g)}
+  for(let j=0;j<6;j++){const n=new THREE.Mesh(new THREE.SphereGeometry(.11,10,8),M(0x9bf4ff,{emissive:0x00bce0,emissiveIntensity:1}));n.position.set(-2.7+j*.95,3.75,1.5);g.add(n);spin.push(()=>{n.scale.setScalar(1+Math.sin(performance.now()/350+j)*.12)})}
+}
+// Pequenos elementos de acabamento repetidos: placas, focos e base de exposição.
+for(let j=0;j<5;j++){const spot=new THREE.SpotLight(0xffdfad,.45,9,.65,.55,1);spot.position.set(-4+j*2,5.35,-1.3);spot.target.position.set(-4+j*2,0,-.3);g.add(spot);g.add(spot.target)}
+box(7.8,.08,5.8,M(col,{emissive:col,emissiveIntensity:.08}),0,.04,0,g);
+const p=new THREE.Mesh(new THREE.SphereGeometry(.22,16,16),new THREE.MeshBasicMaterial({color:col}));p.position.set(x+2.6,1.7,-4);p.userData.i=i;sc.add(p);poi.push(p);spin.push(()=>p.scale.setScalar(1+Math.sin(performance.now()/300)*.2));
+const r=new THREE.Mesh(new THREE.RingGeometry(.5,.7,32),new THREE.MeshBasicMaterial({color:col,side:2}));r.rotation.x=-Math.PI/2;r.position.set(x,.08,3.5);r.userData.go=i;sc.add(r);hot.push(r);
+const pl=new THREE.Group();pl.position.set(x+D/2,0,5.5);sc.add(pl);const pot=new THREE.Mesh(new THREE.CylinderGeometry(.4,.3,.6,12),M(0x6b4a2a));pot.position.y=.3;const lf=new THREE.Mesh(new THREE.SphereGeometry(.7,12,10),M(0x2f8a3a));lf.position.y=1.2;pl.add(pot,lf);
+const st=new THREE.Mesh(new THREE.ConeGeometry(.4,1.6,12),M(0xdddddd,{metalness:.5}));st.position.set(x+D/2,.8,-5.5);sc.add(st);
+const bn=box(2.4,.4,.8,M(0x553a22),x+D/2,.3,2.5);
+const s2=$('#sel'),op=document.createElement('option');op.value=i;op.textContent=s.n;s2.append(op)});
+// ---- navegação ----
+let yaw=0,pit=0,tx=0,cur=0,drag=null;cam.position.set(0,1.7,3.5);
+function goto(i){i=Math.max(0,Math.min(S.length-1,i));tx=i*D;cur=i;$('#sel').value=i;$('#li').value=lights[i].intensity;speechSynthesis.cancel();if($('#au').checked){const u=new SpeechSynthesisUtterance(S[i].n+'. '+S[i].t);u.lang='pt-BR';u.rate=.92;u.pitch=.96;speechSynthesis.speak(u)}}
+$('#sel').onchange=e=>goto(+e.target.value);$('#pv').onclick=()=>goto(cur-1);$('#nx').onclick=()=>goto(cur+1);
+$('#li').oninput=e=>lights[cur].intensity=+e.target.value;
+$('#au').onchange=e=>{if(e.target.checked)goto(cur);else speechSynthesis.cancel()};
+const cv=$('#c');cv.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY,m:0};cv.setPointerCapture(e.pointerId)};
+cv.onpointermove=e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.m+=Math.abs(dx)+Math.abs(dy);yaw+=dx*.005;pit=Math.max(-1.2,Math.min(1.2,pit+dy*.004));drag.x=e.clientX;drag.y=e.clientY};
+cv.onpointerup=e=>{if(drag&&drag.m<6){const rc=new THREE.Raycaster();rc.setFromCamera(new THREE.Vector2(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1),cam);const h=rc.intersectObjects([...poi,...hot])[0];if(h){const u=h.object.userData;if(u.go!==undefined)goto(u.go);else open(u.i)}}drag=null};
+const K={};addEventListener('keydown',e=>K[e.key]=1);addEventListener('keyup',e=>K[e.key]=0);
+function size(){R.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}addEventListener('resize',size);size();
+const mm=$('#mini').getContext('2d');
+function loop(){requestAnimationFrame(loop);
+if(K.ArrowLeft)yaw-=.03;if(K.ArrowRight)yaw+=.03;
+let mv=(K.ArrowUp||K.w?1:0)-(K.ArrowDown||K.s?1:0);
+if(mv){cam.position.x=Math.max(-12,Math.min(L-18,cam.position.x+Math.sin(yaw)*.2*mv));cam.position.z=Math.max(-6,Math.min(6,cam.position.z-Math.cos(yaw)*.2*mv));cur=Math.round(cam.position.x/D);cur=Math.max(0,Math.min(5,cur));if($('#sel').value!=cur){$('#sel').value=cur;if($('#au').checked)goto(cur)}tx=cam.position.x}
+else{cam.position.x+=(tx-cam.position.x)*.06;cam.position.z+=(3.5-cam.position.z)*.04}
+cam.rotation.set(-pit,-yaw,0,'YXZ');spin.forEach(f=>f());
+mm.clearRect(0,0,200,34);mm.strokeStyle='#888';mm.beginPath();mm.moveTo(15,17);mm.lineTo(185,17);mm.stroke();
+S.forEach((s,i)=>{mm.fillStyle=i==cur?'#fff':'#'+s.c.toString(16).padStart(6,'0');mm.beginPath();mm.arc(15+i*34,17,i==cur?8:5,0,7);mm.fill();mm.fillStyle='#000';mm.font='9px sans-serif';if(i==cur)mm.fillText(i+1,12.5+i*34,20)});
+mm.fillStyle='#f55';mm.fillRect(15+cam.position.x/(L-D)*170-2,13,4,8);
+R.render(sc,cam)}
+goto(0);loop();
+</script></body></html>
